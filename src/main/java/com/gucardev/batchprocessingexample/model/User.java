@@ -4,19 +4,25 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "`user`")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    private UUID uuid;
 
     private String name;
     private String surname;
@@ -34,7 +40,7 @@ public class User {
     private String language;
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    private int age;
+    private Integer age;
 
 
 }

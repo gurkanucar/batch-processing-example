@@ -1,8 +1,10 @@
 package com.gucardev.batchprocessingexample.config;
 
+import com.gucardev.batchprocessingexample.listener.UserStepExecutionNotificationListener;
 import com.gucardev.batchprocessingexample.model.User;
 import com.gucardev.batchprocessingexample.model.UserInput;
 import com.gucardev.batchprocessingexample.repository.UserRepository;
+import com.gucardev.batchprocessingexample.listener.UserJobCompleteNotificationListener;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -43,7 +45,6 @@ public class UserBatchConfig {
         return itemReader;
     }
 
-    //3f0daaa9-720e-4bad-a889-199e04cbd673
     private LineMapper<UserInput> lineMapper() {
         DefaultLineMapper<UserInput> lineMapper = new DefaultLineMapper<>();
 
@@ -84,6 +85,7 @@ public class UserBatchConfig {
                 .reader(reader())
                 .processor(processor())
                 .writer(writer())
+                .listener(stepExecutionListener())
                 .taskExecutor(taskExecutor())
                 .build();
     }
@@ -91,6 +93,7 @@ public class UserBatchConfig {
     @Bean
     public Job runJob() {
         return jobBuilderFactory.get("importCustomers")
+                .listener(jobExecutionListener())
                 .flow(step1()).end().build();
 
     }
@@ -101,5 +104,17 @@ public class UserBatchConfig {
         asyncTaskExecutor.setConcurrencyLimit(10);
         return asyncTaskExecutor;
     }
+
+    @Bean
+    public UserStepExecutionNotificationListener stepExecutionListener() {
+        return new UserStepExecutionNotificationListener();
+    }
+
+
+    @Bean
+    public UserJobCompleteNotificationListener jobExecutionListener() {
+        return new UserJobCompleteNotificationListener();
+    }
+
 
 }
